@@ -6,7 +6,7 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 ---
 
 ## Architecture Diagram
-![ETL Pipeline Architecture](Architecture_Diagram.jpeg)
+![Pipeline Architecture](Architecture_Diagram.jpeg)
 
 ## **Tech Stack**
 - **Amazon S3**: For storing daily flight data and airports data.
