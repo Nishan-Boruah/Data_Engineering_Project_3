@@ -5,6 +5,20 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 
 ---
 
+## Architecture Diagram
+![ETL Pipeline Architecture](Architecture_Diagram.jpeg)
+
+## **Tech Stack**
+- **Amazon S3**: For storing daily flight data and airports data.
+- **Amazon Redshift**: For storing transformed flight and airport data.
+- **AWS Glue**: Used for ETL processing, schema discovery, and cataloging with Glue Data Catalog.
+- **AWS Step Functions**: To orchestrate the pipeline.
+- **AWS CloudTrail**: To track S3 data events that trigger the pipeline.
+- **Amazon EventBridge**: To trigger Step Functions based on CloudTrail events.
+- **Amazon SNS**: For error handling and notification purposes.
+
+---
+
 ## **Key Features**
 - **Incremental Data Ingestion**: Flight data is stored in an S3 bucket in partitioned format (`date=yyyy-mm-dd`). The pipeline ingests new files daily into Amazon Redshift incrementally.
 - **Glue Data Transformation**: AWS Glue is used to transform the data by performing a join between the flights data and the airport dimension table. Glue Data Catalog plays a crucial role in managing metadata and tracking table schema versions.
@@ -42,32 +56,37 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 
    The crawlers update the Glue Data Catalog, which maintains metadata, schema, and partition details for the data being processed. This catalog is essential for schema management and tracking changes over time as new data arrives.
 
-2. **Glue ETL Job:**
-   - **Input Sources**: Daily Flight Data from S3 and Airports Master Data from Redshift.
-   - **Transformation**: Joins flight data with airport details (City, State) and applies schema mapping to transform and format the data as per Redshift table requirements.
-   - **Loading**: The transformed data is written incrementally into the Redshift Flight Fact Table using Job Bookmarks to track processed data.
+### **Glue ETL Job:**
+   - The ETL job uses **two input sources**:
+      1. **Daily Flight Data** from S3.
+      2. **Airports Master Data** from Redshift.
+   - A **join operation** is performed on the `OriginAirportID` and `DestinationAirportID` to enrich the flight data with airport details (Name, City, State).
+   - **Schema mapping** is applied to transform and format the data as per Redshift table requirements.
+   - The transformed data is written into the Redshift `Flight Fact Table` incrementally using **Job Bookmarks** to track processed data.
 
 ### **Orchestration and Automation:**
-1. **Step Functions Workflow:**
-   - **Start the Crawler**: The state machine starts by invoking the S3 Crawler to catalog the newly arrived flight data.
-   - **Crawler Status Check**: A Choice State checks if the crawler has finished executing. If the status is RUNNING, a Wait State of 10 seconds is added before rechecking.
-   - **Glue ETL Job Execution**: The Glue ETL job is triggered for transforming the daily flight data and joining it with the airport dimension table in Redshift.
-   - **Error Handling**: If the ETL job fails, an SNS Failure Notification is triggered to notify the team via email. If successful, an SNS Success Notification is sent to indicate pipeline completion.
+## **Step Functions Workflow**
+
+The data pipeline is orchestrated using AWS Step Functions, ensuring each component executes in the correct sequence.
+
+### **Start the Crawler:**
+The state machine starts by invoking the S3 Crawler to catalog the newly arrived flight data.
+
+### **Crawler Status Check:**
+A **Choice State** checks if the crawler has finished executing. If the status is `RUNNING`, a **Wait State** of 10 seconds is added before rechecking.  
+Once the crawler status is `SUCCEEDED`, the pipeline proceeds to the ETL step.
+
+### **Glue ETL Job Execution:**
+The Glue ETL job is triggered for transforming the daily flight data and joining it with the airport dimension table in Redshift.
+
+### **Error Handling:**
+- If the ETL job fails, an **SNS Failure Notification** is triggered to notify the team via email.
+- If successful, an **SNS Success Notification** is sent to indicate pipeline completion.
+
 
 2. **Automation Using EventBridge & CloudTrail:**
    - **CloudTrail**: Configured to track data events for the S3 bucket where flight data lands.
    - **EventBridge Rule**: Triggers the pipeline based on CloudTrail events. Specifically, when a new `flights.csv` file is uploaded (either via `PutObject` or `CompleteMultipartUpload`), EventBridge triggers the Step Functions workflow. This ensures the entire pipeline is event-driven and starts automatically whenever new data is added to S3.
-
----
-
-## **AWS Services Used**
-- **Amazon S3**: For storing daily flight data and airports data.
-- **Amazon Redshift**: For storing transformed flight and airport data.
-- **AWS Glue**: Used for ETL processing, schema discovery, and cataloging with Glue Data Catalog.
-- **AWS Step Functions**: To orchestrate the pipeline.
-- **AWS CloudTrail**: To track S3 data events that trigger the pipeline.
-- **Amazon EventBridge**: To trigger Step Functions based on CloudTrail events.
-- **Amazon SNS**: For error handling and notification purposes.
 
 ---
 
@@ -84,13 +103,6 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 5. **Completion Notification**:
    - If all steps succeed, an SNS notification for successful execution is sent.
    - In case of failure at any step, an SNS failure notification is triggered.
-
----
-
-## **Error Handling and Notifications**
-- **SNS Failure Notifications**: Triggered when any step (crawler execution, Glue job) fails.
-- **Retry Mechanism**: Step Functions include retry and wait states for handling crawler and Glue job statuses.
-- **SNS Success Notifications**: Sent when the pipeline completes successfully.
 
 ---
 
