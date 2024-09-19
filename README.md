@@ -1,4 +1,4 @@
-# **End-to-End Automated Airlines Data Pipeline with Event-Driven Orchestration with AWS**
+# **End-to-End Automated Airlines Data Pipeline with Event-Driven Orchestration (AWS)**
 
 ## **Project Overview**
 This project focuses on building an end-to-end data pipeline for ingesting, transforming, and storing daily flight data in Amazon Redshift. The pipeline is fully automated, orchestrated with AWS Step Functions, and leverages a variety of AWS services including S3, Glue, CloudTrail, EventBridge, and SNS for error handling and notifications. The primary goal is to ingest daily flight data incrementally, perform transformations, and ensure the data is properly ingested into Redshift.
