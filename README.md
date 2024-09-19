@@ -37,7 +37,7 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 
 2. **Daily Flight Data:**
    - **Description**: A CSV file landed daily in an S3 bucket in partitioned format (`date=yyyy-mm-dd`).
-   - **Columns**: `Carrier`, `OriginAirportID`, `DestinationAirportID`, `Departure Delay`, and `Arrival Delay`.
+   - **Columns**: `Carrier`, `OriginAirportID`, `DestinationAirportID`, `DepartureDelay`, and `ArrivalDelay`.
 
 ### **Amazon Redshift:**
 1. **Airports Dimension Table:**
