@@ -56,6 +56,9 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 
    The crawlers update the Glue Data Catalog, which maintains metadata, schema, and partition details for the data being processed. This catalog is essential for schema management and tracking         changes over time as new data arrives.
 
+## Glue Visual ETL
+![Visual ETL](Glue_Visual_ETL.jpeg)
+
 ### **Glue ETL Job:**
    - The ETL job uses **two input sources**:
       1. **Daily Flight Data** from S3.
@@ -63,6 +66,9 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
    - A **join operation** is performed on the `OriginAirportID` and `DestinationAirportID` to enrich the flight data with airport details (Name, City, State).
    - **Schema mapping** is applied to transform and format the data as per Redshift table requirements.
    - The transformed data is written into the Redshift `Flight Fact Table` incrementally using **Job Bookmarks** to track processed data.
+
+## Step Functions 
+![Step Functions](Step_Functions.jpeg)
 
 ### **Orchestration and Automation:**
 ## **Step Functions Workflow**
@@ -83,7 +89,7 @@ The data pipeline is orchestrated using AWS Step Functions, ensuring each compon
    - If successful, an **SNS Success Notification** is sent to indicate pipeline completion.
 
 
-2. **Automation Using EventBridge & CloudTrail:**
+### **Automation Using EventBridge & CloudTrail:**
    - **CloudTrail**: Configured to track data events for the S3 bucket where flight data lands.
    - **EventBridge Rule**: Triggers the pipeline based on CloudTrail events. Specifically, when a new `flights.csv` file is uploaded (either via `PutObject` or `CompleteMultipartUpload`), EventBridge triggers the Step Functions workflow. This ensures the entire pipeline is event-driven and starts automatically whenever new data is added to S3.
 
