@@ -54,7 +54,7 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
    - **Crawler 2 (Redshift Airports Dimension Table)**: Catalogs the schema of the Airports Dimension Table in Redshift.
    - **Crawler 3 (Redshift Flight Fact Table)**: Catalogs the schema of the Flight Fact Table in Redshift.
 
-   The crawlers update the Glue Data Catalog, which maintains metadata, schema, and partition details for the data being processed. This catalog is essential for schema management and tracking changes over time as new data arrives.
+   The crawlers update the Glue Data Catalog, which maintains metadata, schema, and partition details for the data being processed. This catalog is essential for schema management and tracking         changes over time as new data arrives.
 
 ### **Glue ETL Job:**
    - The ETL job uses **two input sources**:
@@ -69,19 +69,18 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 
 The data pipeline is orchestrated using AWS Step Functions, ensuring each component executes in the correct sequence.
 
-### **Start the Crawler:**
-The state machine starts by invoking the S3 Crawler to catalog the newly arrived flight data.
+### 1. **Start the Crawler:**
+   - The state machine starts by invoking the S3 Crawler to catalog the newly arrived flight data.
 
-### **Crawler Status Check:**
-A **Choice State** checks if the crawler has finished executing. If the status is `RUNNING`, a **Wait State** of 10 seconds is added before rechecking.  
-Once the crawler status is `SUCCEEDED`, the pipeline proceeds to the ETL step.
+### 2. **Crawler Status Check:**
+   - A **Choice State** checks if the crawler has finished executing. If the status is `RUNNING`, a **Wait State** of 10 seconds is added before rechecking.  Once the crawler status is `SUCCEEDED`, the pipeline proceeds to the ETL step.
 
-### **Glue ETL Job Execution:**
-The Glue ETL job is triggered for transforming the daily flight data and joining it with the airport dimension table in Redshift.
+### 3. **Glue ETL Job Execution:**
+   - The Glue ETL job is triggered for transforming the daily flight data and joining it with the airport dimension table in Redshift.
 
-### **Error Handling:**
-- If the ETL job fails, an **SNS Failure Notification** is triggered to notify the team via email.
-- If successful, an **SNS Success Notification** is sent to indicate pipeline completion.
+### 4. **Error Handling:**
+   - If the ETL job fails, an **SNS Failure Notification** is triggered to notify via email.
+   - If successful, an **SNS Success Notification** is sent to indicate pipeline completion.
 
 
 2. **Automation Using EventBridge & CloudTrail:**
