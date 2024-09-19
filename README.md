@@ -45,7 +45,7 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
    - **Data Ingestion**: Populated from the airports CSV file using Redshift's `COPY` command from S3.
 
 2. **Flight Fact Table:**
-   - **Columns**: `Carrier`, `DepartureAirport`, `ArrivalAirport`, `DepartureCity`, `ArrivalCity`, `DepartureState`, `ArrivalState`, `DepartureDelay`, `ArrivalDelay`
+   - **Columns**: `Carrier`, `DepartureAirport`, `ArrivalAirport`, `DepartureCity`, `ArrivalCity`, `DepartureState`, `ArrivalState`, `DepartureDelay`, `ArrivalDelay`.
    - **Purpose**: This table is populated incrementally with the transformed flight data after joining with the airport dimension.
 
 ### **Glue ETL and Glue Data Catalog:**
@@ -68,7 +68,7 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
    - The transformed data is written into the Redshift `Flight Fact Table` incrementally using **Job Bookmarks** to track processed data.
 
 ## Step Functions 
-![Step Functions](Step_Functions.jpeg)
+![Step Functions](Step_Functions.JPG)
 
 ### **Orchestration and Automation:**
 ## **Step Functions Workflow**
