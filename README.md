@@ -37,15 +37,15 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
 
 2. **Daily Flight Data:**
    - **Description**: A CSV file landed daily in an S3 bucket in partitioned format (`date=yyyy-mm-dd`).
-   - **Columns**: Carrier, OriginAirportID, DestinationAirportID, Departure Delay, and Arrival Delay.
+   - **Columns**: `Carrier`, `OriginAirportID`, `DestinationAirportID`, `Departure Delay`, and `Arrival Delay`.
 
 ### **Amazon Redshift:**
 1. **Airports Dimension Table:**
-   - **Columns**: Airport ID, City, State, Name.
+   - **Columns**: `Airport ID`, `City`, `State`, `Name`.
    - **Data Ingestion**: Populated from the airports CSV file using Redshift's `COPY` command from S3.
 
 2. **Flight Fact Table:**
-   - **Columns**: Carrier, DepartureAirport, ArrivalAirport, DepartureCity, ArrivalCity, DepartureState, ArrivalState, DepartureDelay, ArrivalDelay
+   - **Columns**: `Carrier`, `DepartureAirport`, `ArrivalAirport`, `DepartureCity`, `ArrivalCity`, `DepartureState`, `ArrivalState`, `DepartureDelay`, `ArrivalDelay`
    - **Purpose**: This table is populated incrementally with the transformed flight data after joining with the airport dimension.
 
 ### **Glue ETL and Glue Data Catalog:**
@@ -57,12 +57,12 @@ This project focuses on building an end-to-end data pipeline for ingesting, tran
    The crawlers update the Glue Data Catalog, which maintains metadata, schema, and partition details for the data being processed. This catalog is essential for schema management and tracking         changes over time as new data arrives.
 
 ## Glue Visual ETL
-![Visual ETL](Glue_Visual_ETL.jpeg)
+![Visual ETL](Glue_Visual_ETL.JPG)
 
 ### **Glue ETL Job:**
    - The ETL job uses **two input sources**:
-      1. **Daily Flight Data** from S3.
-      2. **Airports Master Data** from Redshift.
+   1. **Daily Flight Data** from S3.
+   2. **Airports Master Data** from Redshift.
    - A **join operation** is performed on the `OriginAirportID` and `DestinationAirportID` to enrich the flight data with airport details (Name, City, State).
    - **Schema mapping** is applied to transform and format the data as per Redshift table requirements.
    - The transformed data is written into the Redshift `Flight Fact Table` incrementally using **Job Bookmarks** to track processed data.
